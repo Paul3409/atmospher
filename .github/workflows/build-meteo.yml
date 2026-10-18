@@ -2,6 +2,8 @@ name: Build Meteo
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
 
 jobs:
   build:
@@ -19,7 +21,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          unzip -q "Meteo-V1.8.1-Fabric-1.21.1.zip" -d build-source
+          unzip -q "Meteo-V2.0.0-Fabric-1.21.1.zip" -d build-source
           root=$(find build-source -mindepth 1 -maxdepth 1 -type d | head -n 1)
           sed -i "s/fabric-loom' version '1.9-SNAPSHOT/fabric-loom' version '1.9.2/" "$root/build.gradle"
           echo "METEO_ROOT=$root" >> "$GITHUB_ENV"
@@ -28,6 +30,6 @@ jobs:
         run: gradle --no-daemon clean build
       - uses: actions/upload-artifact@v4
         with:
-          name: meteo-1.8.1-fabric-1.21.1
+          name: meteo-2.0.0-fabric-1.21.1
           path: ${{ env.METEO_ROOT }}/build/libs/*.jar
           if-no-files-found: error
