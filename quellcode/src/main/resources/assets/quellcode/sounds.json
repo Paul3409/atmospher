@@ -1,0 +1,11 @@
+{
+  "martinshorn": {
+    "subtitle": "subtitle.quellcode.martinshorn",
+    "sounds": [
+      {
+        "name": "quellcode:martinshorn",
+        "stream": false
+      }
+    ]
+  }
+}

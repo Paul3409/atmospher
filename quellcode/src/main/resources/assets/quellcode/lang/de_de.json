@@ -1,0 +1,19 @@
+{
+  "itemGroup.quellcode": "Feuerwehr Nebelthal",
+  "category.quellcode": "Quellcode — Nebelthal",
+  "key.quellcode.lights": "Blaulicht",
+  "key.quellcode.siren": "Martinshorn",
+  "key.quellcode.ladder": "Drehleiter ausfahren / einfahren",
+  "message.quellcode.controls": "WASD: Fahren | B: Blaulicht | N: Horn | L: Leiter | Umschalt: Aussteigen",
+  "item.quellcode.mzf_elw": "MZF / ELW — FL NT 10/18-01",
+  "entity.quellcode.mzf_elw": "MZF / ELW — FL NT 10/18-01",
+  "item.quellcode.dlk_18": "DLK 18 — FL NT 10/32-01",
+  "entity.quellcode.dlk_18": "DLK 18 — FL NT 10/32-01",
+  "item.quellcode.lf_10": "LF 10 — FL NT 10/42-01",
+  "entity.quellcode.lf_10": "LF 10 — FL NT 10/42-01",
+  "item.quellcode.tsf_w": "TSF-W — FL NT 10/48-01",
+  "entity.quellcode.tsf_w": "TSF-W — FL NT 10/48-01",
+  "item.quellcode.mzb": "MZB — FL NT 10/79-01",
+  "entity.quellcode.mzb": "MZB — FL NT 10/79-01",
+  "subtitle.quellcode.martinshorn": "Martinshorn"
+}

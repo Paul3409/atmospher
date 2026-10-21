@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "quellcode",
+  "version": "${version}",
+  "name": "Quellcode — Feuerwehr Nebelthal",
+  "description": "Fünf einheitlich gestaltete Einsatzfahrzeuge der Feuerwehr Nebelthal.",
+  "authors": ["Nebelthal"],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["de.nebelthal.quellcode.Quellcode"],
+    "client": ["de.nebelthal.quellcode.client.QuellcodeClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.14", "minecraft": "~1.21.1", "java": ">=21", "fabric-api": "*"
+  }
+}

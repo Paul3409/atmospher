@@ -1,0 +1,19 @@
+{
+  "itemGroup.quellcode": "Feuerwehr Nebelthal",
+  "category.quellcode": "Quellcode — Nebelthal",
+  "key.quellcode.lights": "Blue lights",
+  "key.quellcode.siren": "Two-tone siren",
+  "key.quellcode.ladder": "Deploy / retract ladder",
+  "message.quellcode.controls": "WASD: Drive | B: Lights | N: Siren | L: Ladder | Shift: Dismount",
+  "item.quellcode.mzf_elw": "MZF / ELW — FL NT 10/18-01",
+  "entity.quellcode.mzf_elw": "MZF / ELW — FL NT 10/18-01",
+  "item.quellcode.dlk_18": "DLK 18 — FL NT 10/32-01",
+  "entity.quellcode.dlk_18": "DLK 18 — FL NT 10/32-01",
+  "item.quellcode.lf_10": "LF 10 — FL NT 10/42-01",
+  "entity.quellcode.lf_10": "LF 10 — FL NT 10/42-01",
+  "item.quellcode.tsf_w": "TSF-W — FL NT 10/48-01",
+  "entity.quellcode.tsf_w": "TSF-W — FL NT 10/48-01",
+  "item.quellcode.mzb": "MZB — FL NT 10/79-01",
+  "entity.quellcode.mzb": "MZB — FL NT 10/79-01",
+  "subtitle.quellcode.martinshorn": "Fire vehicle siren"
+}
