@@ -27,13 +27,13 @@ Alle Fahrzeuge verwenden dieselbe Farbpalette: feuerwehrrote Karosserie, helle S
 
 Beim ersten Build werden Minecraft-, Fabric- und Gradle-Abhängigkeiten aus dem Internet geladen. Python, ffmpeg, Blockbench und zusätzliche Modellbibliotheken werden zum Kompilieren **nicht** benötigt.
 
-Ergebnis: **`build\libs\quellcode-1.1.0.jar`**.
-Die Datei `quellcode-1.1.0-sources.jar` enthält Quellcode und wird nicht als Mod installiert.
+Ergebnis: **`build\libs\quellcode-1.1.1.jar`**.
+Die Datei `quellcode-1.1.1-sources.jar` enthält Quellcode und wird nicht als Mod installiert.
 
 ## Installieren und verwenden
 
 - Minecraft **1.21.1** mit Fabric Loader **0.16.14 oder neuer** starten.
-- Die alte `quellcode-1.0.0.jar` aus dem `mods`-Ordner entfernen. Dann `quellcode-1.1.0.jar` und **Fabric API für 1.21.1** hineinlegen. Entwickelt mit Fabric API `0.116.6+1.21.1`. Beide Quellcode-JARs zugleich zu installieren erzeugt einen Mod-ID-Konflikt.
+- Alte Quellcode-JARs (`1.0.0` und `1.1.0`) aus dem `mods`-Ordner entfernen. Dann `quellcode-1.1.1.jar` und **Fabric API für 1.21.1** hineinlegen. Entwickelt mit Fabric API `0.116.6+1.21.1`. Mehrere Quellcode-JARs zugleich erzeugen einen Mod-ID-Konflikt.
 - Für Multiplayer müssen Server und alle Mitspieler den Mod und Fabric API installieren.
 - Kreativ-Inventar → **Feuerwehr Nebelthal**. Ein Fahrzeugitem auf einen freien, ebenen Platz rechtsklicken. Für die langen Fahrzeuge mindestens 4×8 freie Blöcke einplanen. Mit dem MZB-Item direkt auf die Wasseroberfläche rechtsklicken; das Boot setzt dort auf dem Wasser auf.
 - Fahrzeug rechtsklicken: einsteigen. **F5** für bessere Übersicht verwenden.

@@ -1,16 +1,20 @@
 # Validation — 2026-10-21
 
+## Client crash addressed in 1.1.1
+
+The supplied crash report for 1.1.0 shows `IllegalStateException: Not building!` in `VehicleRendererV2.quad`, called from `frontText` while rendering the MZF/ELW. The renderer requested three different texture buffers before drawing to the first one. `VertexConsumerProvider.Immediate` closes the previous buffer when it changes render layers, so the subsequent write failed. Version 1.1.1 requests the buffer immediately before drawing each marked surface. The same ordering correction covers the blue-light renderer, which also held two buffers across layer switches. The DLK ladder now finishes drawing before the renderer changes away from the body texture buffer. The crash report does not identify a fault in the other installed mods.
+
 ## Build and server
 
-The updated project compiled with JDK 21 and the requested Gradle 8.14.6:
+The 1.1.1 project compiled with JDK 21 and the requested Gradle 8.14.6:
 
 ```text
 gradle clean build --no-daemon --stacktrace --offline
-BUILD SUCCESSFUL in 14s
+BUILD SUCCESSFUL in 15s
 9 actionable tasks: 9 executed
 ```
 
-The build compiled both common/server and client code, processed resources and remapped `quellcode-1.1.0.jar`. Gradle's existing deprecation warning remains. The source has no automated Java unit tests (`test NO-SOURCE`).
+The build compiled both common/server and client code, processed resources and remapped `quellcode-1.1.1.jar`. Gradle's existing deprecation warning remains. The source has no automated Java unit tests (`test NO-SOURCE`).
 
 A Fabric 1.21.1 dedicated server started successfully with version 1.1.0. Its recipe count increased from 1290 to 1291 after adding the recovery tool recipe. `/summon quellcode:rw_2` returned `Summoned new RW 2 — FL NT 10/52-01`. Previously saved LF 10 and MZB entities were still present in the same world. The old boat remained at Y ≈ 2.537 on the test water surface. `save-all` and clean shutdown completed.
 

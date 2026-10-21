@@ -41,9 +41,9 @@ public final class VehicleRendererV2 extends EntityRenderer<VehicleEntity> {
                 wheel(matrices,body,x,.48f,back,light);
             }
         }
+        if (entity.kind==VehicleKind.DLK_18) ladder(matrices,body,entity.ladderExtension(),light);
         marks(entity,matrices,consumers);
         beacons(entity,matrices,consumers,light);
-        if (entity.kind==VehicleKind.DLK_18) ladder(matrices,body,entity.ladderExtension(),light);
         matrices.pop();
         super.render(entity,yaw,tickDelta,matrices,consumers,light);
     }
@@ -201,49 +201,49 @@ public final class VehicleRendererV2 extends EntityRenderer<VehicleEntity> {
     }
     private void marks(VehicleEntity entity,MatrixStack m,VertexConsumerProvider consumers) {
         String id=entity.kind.id;
-        VertexConsumer brand=consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(Quellcode.id("textures/markings/brand.png")));
-        VertexConsumer name=consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(Quellcode.id("textures/markings/"+id+"_name.png")));
-        VertexConsumer call=consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(Quellcode.id("textures/markings/"+id+"_callsign.png")));
+        Identifier brandTexture=Quellcode.id("textures/markings/brand.png");
+        Identifier nameTexture=Quellcode.id("textures/markings/"+id+"_name.png");
+        Identifier callTexture=Quellcode.id("textures/markings/"+id+"_callsign.png");
         float half=entity.kind.width/2;
         if(entity.kind==VehicleKind.MZB) {
-            sideText(m,name,-.998f,.58f,-1.55f,2.35f,.25f,false);
-            sideText(m,name,.998f,.58f,-1.55f,2.35f,.25f,true);
-            sideText(m,call,-.998f,.39f,-1.45f,2.1f,.17f,false);
-            sideText(m,call,.998f,.39f,-1.45f,2.1f,.17f,true);
+            sideText(m,consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(nameTexture)),-.998f,.58f,-1.55f,2.35f,.25f,false);
+            sideText(m,consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(nameTexture)),.998f,.58f,-1.55f,2.35f,.25f,true);
+            sideText(m,consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(callTexture)),-.998f,.39f,-1.45f,2.1f,.17f,false);
+            sideText(m,consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(callTexture)),.998f,.39f,-1.45f,2.1f,.17f,true);
             return;
         }
         float front=entity.kind==VehicleKind.MZF_ELW?-2.87f:entity.kind==VehicleKind.TSF_W?-2.91f:-2.79f;
         float frontLabelY=entity.kind==VehicleKind.MZF_ELW||entity.kind==VehicleKind.TSF_W?1.24f:1.43f;
         float frontLabelHeight=frontLabelY==1.24f?.2f:.27f;
-        frontText(m,brand,-.77f,frontLabelY,front-.006f,1.54f,frontLabelHeight,false);
+        frontText(m,consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(brandTexture)),-.77f,frontLabelY,front-.006f,1.54f,frontLabelHeight,false);
         if(entity.kind==VehicleKind.MZF_ELW) {
             for(boolean right:new boolean[]{false,true}) {
                 float x=right?half+.02f:-half-.02f;
-                sideText(m,name,x,1.3f,.07f,2.16f,.34f,right);
-                sideText(m,call,x,1.05f,.15f,2.06f,.24f,right);
+                sideText(m,consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(nameTexture)),x,1.3f,.07f,2.16f,.34f,right);
+                sideText(m,consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(callTexture)),x,1.05f,.15f,2.06f,.24f,right);
             }
         } else if(entity.kind==VehicleKind.TSF_W) {
             for(boolean right:new boolean[]{false,true}) {
                 float x=right?half+.07f:-half-.07f;
-                sideText(m,name,x,2.56f,.24f,2.48f,.29f,right);
-                sideText(m,call,x,.82f,.3f,2.32f,.17f,right);
+                sideText(m,consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(nameTexture)),x,2.56f,.24f,2.48f,.29f,right);
+                sideText(m,consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(callTexture)),x,.82f,.3f,2.32f,.17f,right);
             }
         } else if(entity.kind==VehicleKind.DLK_18) {
             for(boolean right:new boolean[]{false,true}) {
                 float x=right?half+.07f:-half-.07f;
-                sideText(m,name,x,1.38f,.78f,2.13f,.3f,right);
-                sideText(m,call,x,.84f,.65f,2.3f,.18f,right);
+                sideText(m,consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(nameTexture)),x,1.38f,.78f,2.13f,.3f,right);
+                sideText(m,consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(callTexture)),x,.84f,.65f,2.3f,.18f,right);
             }
         } else {
             for(boolean right:new boolean[]{false,true}) {
                 float x=right?half+.07f:-half-.07f;
-                sideText(m,name,x,2.66f,.3f,2.65f,.3f,right);
-                sideText(m,call,x,.83f,.36f,2.4f,.18f,right);
+                sideText(m,consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(nameTexture)),x,2.66f,.3f,2.65f,.3f,right);
+                sideText(m,consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(callTexture)),x,.83f,.36f,2.4f,.18f,right);
             }
         }
         // Rear text is fixed to the actual rear panel, never beyond the vehicle.
         float rear=entity.kind==VehicleKind.MZF_ELW?2.54f:entity.kind==VehicleKind.TSF_W?2.94f:entity.kind==VehicleKind.DLK_18?3.24f:3.49f;
-        frontText(m,call,-.92f,1.42f,rear+.012f,1.84f,.22f,true);
+        frontText(m,consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(callTexture)),-.92f,1.42f,rear+.012f,1.84f,.22f,true);
     }
     private static void sideText(MatrixStack m,VertexConsumer v,float x,float y,float z,float length,float height,boolean right) {
         float[][] corners=right ? new float[][]{{x,y,z+length},{x,y,z},{x,y+height,z},{x,y+height,z+length}}
@@ -256,19 +256,19 @@ public final class VehicleRendererV2 extends EntityRenderer<VehicleEntity> {
         quad(m,v,0xF000F0,corners,0,0,rear?1:-1);
     }
     private void beacons(VehicleEntity e,MatrixStack m,VertexConsumerProvider consumers,int light) {
-        VertexConsumer lit=consumers.getBuffer(RenderLayer.getEntityTranslucentEmissive(getTexture(e)));
-        VertexConsumer unlit=consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(getTexture(e)));
+        RenderLayer lit=RenderLayer.getEntityTranslucentEmissive(getTexture(e));
+        RenderLayer unlit=RenderLayer.getEntityCutoutNoCull(getTexture(e));
         float roof=e.kind==VehicleKind.MZB?1.98f:e.kind==VehicleKind.MZF_ELW?2.66f:e.kind==VehicleKind.TSF_W?2.95f:3.13f;
         float front=e.kind==VehicleKind.MZB?.42f:e.kind==VehicleKind.MZF_ELW?-1.24f:-2.25f;
         for(int side=0;side<2;side++) {
             boolean on=e.lightsOn()&&((e.age/3+side)%4<2);
             float x=side==0?-.86f:.55f;
-            box(m,on?lit:unlit,new Part(x,roof,front,.31f,.22f,.31f,BLUE),on?0xF000F0:light);
-            if(on) box(m,lit,new Part(x+.06f,roof+.18f,front-.02f,.19f,.08f,.04f,HEADLAMP),0xF000F0);
+            box(m,consumers.getBuffer(on?lit:unlit),new Part(x,roof,front,.31f,.22f,.31f,BLUE),on?0xF000F0:light);
+            if(on) box(m,consumers.getBuffer(lit),new Part(x+.06f,roof+.18f,front-.02f,.19f,.08f,.04f,HEADLAMP),0xF000F0);
             if(e.kind!=VehicleKind.MZB) {
                 float rear=e.kind==VehicleKind.MZF_ELW?2.25f:e.kind==VehicleKind.TSF_W?2.6f:3.05f;
-                box(m,on?lit:unlit,new Part(x,roof-.08f,rear,.3f,.14f,.13f,BLUE),on?0xF000F0:light);
-                if(on) box(m,lit,new Part(x+.06f,roof-.04f,rear+.12f,.18f,.08f,.03f,HEADLAMP),0xF000F0);
+                box(m,consumers.getBuffer(on?lit:unlit),new Part(x,roof-.08f,rear,.3f,.14f,.13f,BLUE),on?0xF000F0:light);
+                if(on) box(m,consumers.getBuffer(lit),new Part(x+.06f,roof-.04f,rear+.12f,.18f,.08f,.03f,HEADLAMP),0xF000F0);
             }
         }
     }
