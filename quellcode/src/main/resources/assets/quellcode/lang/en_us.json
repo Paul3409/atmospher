@@ -5,6 +5,7 @@
   "key.quellcode.siren": "Two-tone siren",
   "key.quellcode.ladder": "Deploy / retract ladder",
   "message.quellcode.controls": "WASD: Drive | B: Lights | N: Siren | L: Ladder | Shift: Dismount",
+  "item.quellcode.recovery_tool": "Vehicle recovery tool",
   "item.quellcode.mzf_elw": "MZF / ELW — FL NT 10/18-01",
   "entity.quellcode.mzf_elw": "MZF / ELW — FL NT 10/18-01",
   "item.quellcode.dlk_18": "DLK 18 — FL NT 10/32-01",
@@ -15,5 +16,7 @@
   "entity.quellcode.tsf_w": "TSF-W — FL NT 10/48-01",
   "item.quellcode.mzb": "MZB — FL NT 10/79-01",
   "entity.quellcode.mzb": "MZB — FL NT 10/79-01",
+  "item.quellcode.rw_2": "RW 2 — FL NT 10/52-01",
+  "entity.quellcode.rw_2": "RW 2 — FL NT 10/52-01",
   "subtitle.quellcode.martinshorn": "Fire vehicle siren"
 }

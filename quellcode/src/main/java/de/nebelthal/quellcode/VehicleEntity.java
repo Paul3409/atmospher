@@ -25,7 +25,7 @@ public final class VehicleEntity extends Entity {
     private static final TrackedData<Float> LADDER = DataTracker.registerData(VehicleEntity.class, TrackedDataHandlerRegistry.FLOAT);
     public final VehicleKind kind;
     private boolean forward, back, left, right, ladderTarget;
-    private int lastInput = -100, lastToggle = -100;
+    private int lastInput = -100, lastToggle = -100, sirenTicks;
     private double speed;
     private int interpolationSteps;
     private double targetX, targetY, targetZ;
@@ -65,7 +65,7 @@ public final class VehicleEntity extends Entity {
         float extension = ladderExtension();
         float next = MathHelper.clamp(extension + (ladderTarget ? 0.0125f : -0.0125f), 0, 1);
         if (next != extension) dataTracker.set(LADDER, next);
-        boolean water = getWorld().getFluidState(getBlockPos()).isIn(FluidTags.WATER);
+        boolean water = kind == VehicleKind.MZB && getWorld().getFluidState(getBlockPos()).isIn(FluidTags.WATER);
         boolean canDrive = kind == VehicleKind.MZB ? water : isOnGround();
         if (canDrive && next == 0) speed += (forward ? 0.012 : 0) - (back ? 0.009 : 0);
         speed *= (forward || back) && canDrive ? 0.98 : 0.88;
@@ -74,14 +74,15 @@ public final class VehicleEntity extends Entity {
         if (Math.abs(speed) > 0.003) setYaw(getYaw() + ((right ? 1 : 0) - (left ? 1 : 0)) * 2.2f * (float)Math.signum(speed));
         double radians = Math.toRadians(getYaw());
         double vertical = getVelocity().y;
-        if (kind == VehicleKind.MZB && water) {
+        if (water) {
             double surface = getBlockY() + getWorld().getFluidState(getBlockPos()).getHeight(getWorld(), getBlockPos());
             vertical = MathHelper.clamp((surface - getY() - 0.35) * 0.15, -0.1, 0.1);
         } else vertical = isOnGround() ? -0.04 : Math.max(-0.8, vertical - 0.04);
         setVelocity(-Math.sin(radians) * speed, vertical, Math.cos(radians) * speed);
         move(MovementType.SELF, getVelocity());
         if (horizontalCollision) speed = 0;
-        if (sirenOn() && age % 40 == 0) getWorld().playSound(null, getX(), getY(), getZ(), Quellcode.SIREN, SoundCategory.NEUTRAL, 1.8f, 1f);
+        if (sirenOn() && sirenTicks++ % 146 == 0) getWorld().playSound(null, getX(), getY(), getZ(), Quellcode.SIREN, SoundCategory.NEUTRAL, 1.4f, 1f);
+        if (!sirenOn()) sirenTicks = 0;
     }
     @Override public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int steps) {
         targetX = x; targetY = y; targetZ = z; targetYaw = yaw; interpolationSteps = Math.max(1, steps);
@@ -94,6 +95,11 @@ public final class VehicleEntity extends Entity {
     }
     @Override public ActionResult interact(PlayerEntity player, Hand hand) {
         if (hand != Hand.MAIN_HAND) return ActionResult.PASS;
+        if (player.getStackInHand(hand).isOf(Quellcode.RECOVERY_TOOL)) {
+            if (hasPassengers()) return ActionResult.FAIL;
+            if (!getWorld().isClient) { dropItem(Quellcode.ITEMS.get(kind)); discard(); }
+            return ActionResult.SUCCESS;
+        }
         if (player.isSneaking()) {
             if (player.isCreative() && !hasPassengers()) {
                 if (!getWorld().isClient) { dropItem(Quellcode.ITEMS.get(kind)); discard(); }

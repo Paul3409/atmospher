@@ -3,7 +3,7 @@
   "id": "quellcode",
   "version": "${version}",
   "name": "Quellcode — Feuerwehr Nebelthal",
-  "description": "Fünf einheitlich gestaltete Einsatzfahrzeuge der Feuerwehr Nebelthal.",
+  "description": "Sechs Einsatzfahrzeuge der Feuerwehr Nebelthal mit eigenständigen Aufbauten und Bergungsschlüssel.",
   "authors": ["Nebelthal"],
   "license": "MIT",
   "environment": "*",

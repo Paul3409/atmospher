@@ -1,7 +1,7 @@
 # Quellcode — Feuerwehr Nebelthal
 
 Fabric-Mod für **Minecraft Java 1.21.1**, **JDK 21** und **Fabric API**.
-Ein Mod enthält alle fünf Fahrzeuge. Java-Quellcode wird zu einer **.jar-Datei** kompiliert.
+Ein Mod enthält sechs Fahrzeuge und einen Bergungsschlüssel. Java-Quellcode wird zu einer **.jar-Datei** kompiliert.
 
 | Fahrzeug | Funkkenner | Gestaltung |
 | --- | --- | --- |
@@ -10,8 +10,9 @@ Ein Mod enthält alle fünf Fahrzeuge. Java-Quellcode wird zu einer **.jar-Datei
 | LF 10 | FL NT 10/42-01 | Löschgruppenfahrzeug mit Geräteräumen, Rollläden, Dachleiter und Saugschläuchen |
 | TSF-W | FL NT 10/48-01 | Kompakterer Aufbau mit gleichem Flottendesign |
 | MZB | FL NT 10/79-01 | Motorboot mit Außenbordmotor, Steuerstand und seitlichem Schriftzug **Nebelthal** |
+| RW 2 | FL NT 10/52-01 | Rüstwagen mit kurzem Fahrerhaus, vier seitlichen Geräteräumen und Dachgerät |
 
-Alle Fahrzeuge verwenden dieselbe Farbpalette: feuerwehrrote Karosserie, helle Dächer/Stoßfänger, gelbe Konturstreifen, Aluminium-Rollläden und blaue Leuchten. Die 1024×1024-PNG-Atlanten unterscheiden sich in den Funkkennern. Eigene geometrische Modelle, keine Herstellerlogos oder übernommenen Fahrzeugmodelle. Die Gestaltung orientiert sich an deutschen Feuerwehrfahrzeugen; sie ist keine maßstabsgetreue Nachbildung eines konkreten Fahrgestells.
+Alle Fahrzeuge verwenden dieselbe Farbpalette: feuerwehrrote Karosserie, helle Stoßfänger, gelbe Konturstreifen, Aluminium-Rollläden und blaue Leuchten. Für die Schrift gibt es eigene hochauflösende Texturen. Die Fahrzeuge unterscheiden sich in Kabine, Motorhaube, Aufbau, Radstand und Dachausrüstung. Die beiliegenden Bilder dienten als Referenz für die Silhouetten. Es wurden weder deren Schriftzüge noch Herstellerlogos oder fremde Modelle übernommen. Die Modelle sind Minecraft-Geometrie und keine maßstabsgetreuen Fahrzeugnachbauten.
 
 ## Unter Windows kompilieren
 
@@ -26,21 +27,21 @@ Alle Fahrzeuge verwenden dieselbe Farbpalette: feuerwehrrote Karosserie, helle D
 
 Beim ersten Build werden Minecraft-, Fabric- und Gradle-Abhängigkeiten aus dem Internet geladen. Python, ffmpeg, Blockbench und zusätzliche Modellbibliotheken werden zum Kompilieren **nicht** benötigt.
 
-Ergebnis: **`build\libs\quellcode-1.0.0.jar`**.
-Die Datei `quellcode-1.0.0-sources.jar` enthält Quellcode und wird nicht als Mod installiert.
+Ergebnis: **`build\libs\quellcode-1.1.0.jar`**.
+Die Datei `quellcode-1.1.0-sources.jar` enthält Quellcode und wird nicht als Mod installiert.
 
 ## Installieren und verwenden
 
 - Minecraft **1.21.1** mit Fabric Loader **0.16.14 oder neuer** starten.
-- `quellcode-1.0.0.jar` und **Fabric API für 1.21.1** in den `mods`-Ordner legen. Entwickelt mit Fabric API `0.116.6+1.21.1`.
+- Die alte `quellcode-1.0.0.jar` aus dem `mods`-Ordner entfernen. Dann `quellcode-1.1.0.jar` und **Fabric API für 1.21.1** hineinlegen. Entwickelt mit Fabric API `0.116.6+1.21.1`. Beide Quellcode-JARs zugleich zu installieren erzeugt einen Mod-ID-Konflikt.
 - Für Multiplayer müssen Server und alle Mitspieler den Mod und Fabric API installieren.
-- Kreativ-Inventar → **Feuerwehr Nebelthal**. Ein Fahrzeugitem auf einen freien, ebenen Platz rechtsklicken. Für die langen Fahrzeuge mindestens 4×8 freie Blöcke einplanen. Das MZB an einem Ufer/Becken platzieren oder im Wasser beschwören.
+- Kreativ-Inventar → **Feuerwehr Nebelthal**. Ein Fahrzeugitem auf einen freien, ebenen Platz rechtsklicken. Für die langen Fahrzeuge mindestens 4×8 freie Blöcke einplanen. Mit dem MZB-Item direkt auf die Wasseroberfläche rechtsklicken; das Boot setzt dort auf dem Wasser auf.
 - Fahrzeug rechtsklicken: einsteigen. **F5** für bessere Übersicht verwenden.
 - **W/S:** vorwärts/rückwärts; **A/D:** lenken; **Umschalt:** aussteigen.
 - **B:** Blaulicht; **N:** Zweitonhorn; **L:** Leiter aus-/einfahren, ausschließlich bei stillstehender DLK auf dem Boden. Die Fahrt bleibt während ausgefahrener Leiter gesperrt.
 - Die drei Sondertasten sind in den Minecraft-Steuerungsoptionen frei belegbar. WASD folgt ebenfalls den normalen Minecraft-Bewegungstasten.
-- Im Kreativmodus: **Schleichen + Rechtsklick** auf ein leeres Fahrzeug entfernt es und lässt das Fahrzeugitem fallen.
-- Hornlautstärke: Minecraft-Lautstärkeregler **Freundliche Kreaturen**. Abschalten beendet die laufende Tonsequenz spätestens nach zwei Sekunden.
+- **Bergungsschlüssel** in die Hand nehmen und auf ein unbesetztes Fahrzeug rechtsklicken. Das Fahrzeug wird als Item zurückgegeben. Im Kreativmodus funktioniert bei unbesetzten Fahrzeugen auch Schleichen + Rechtsklick. Der Schlüssel ist im Kreativ-Inventar und per Rezept aus einem Eisenbarren und einem Stock erhältlich.
+- Hornlautstärke: Minecraft-Lautstärkeregler **Freundliche Kreaturen**. Das Horn benutzt eine ins OGG-Format übertragene und am Anfang/Ende weich ausgeblendete Fassung der vom Nutzer bereitgestellten MP3. Beim Ausschalten läuft die bereits gestartete, höchstens etwa sieben Sekunden lange Tonfolge noch zu Ende.
 
 Alternativ mit Cheats:
 
@@ -50,12 +51,14 @@ Alternativ mit Cheats:
 /give @s quellcode:lf_10
 /give @s quellcode:tsf_w
 /give @s quellcode:mzb
+/give @s quellcode:rw_2
+/give @s quellcode:recovery_tool
 /summon quellcode:mzb ~ ~ ~
 ```
 
 ## Funktionsumfang und Grenzen
 
-Enthalten: fünf platzierbare und fahrbare Fahrzeugentitäten, ein Fahrerplatz je Fahrzeug, einfaches Beschleunigen/Bremsen/Lenken, Bootsauftrieb, wechselnde Blaulichter, ein eigenes synthetisches Zweitonhorn, animierte Leiter und Stützen, Serverprüfung der Fahrereingaben und Speicherung von Licht/Horn/Leiter im Spielstand. Fahrbetrieb und Leiterzustand laufen auf dem Server; Modelle, Tasten und Darstellung sind separater Client-Code.
+Enthalten: sechs platzierbare und fahrbare Fahrzeugentitäten, ein Fahrerplatz je Fahrzeug, einfaches Beschleunigen/Bremsen/Lenken, Platzierung auf Wasser und Bootsauftrieb, hell gerenderte wechselnde Blaulichter, das bereitgestellte Martinshorn, eine animierte Leiter mit nach hinten versetztem Drehkranz, ein Bergungsschlüssel, Serverprüfung der Fahrereingaben und Speicherung von Licht/Horn/Leiter im Spielstand. Fahrbetrieb und Leiterzustand laufen auf dem Server; Modelle, Tasten und Darstellung sind separater Client-Code.
 
 Die Modelle sind detaillierte Minecraft-Geometrie, keine fotorealistischen CAD-Modelle. Es gibt noch keine funktionierenden Pumpen, Schläuche, Löschwasser, Inventare, öffnenden Türen/Geräteräume, begehbaren Leitern, benutzbaren Rettungskörbe, Mehrpersonenbesatzung, Schaltgetriebe oder Schadenssimulation. Blaulicht wird hell dargestellt und beleuchtet keine benachbarten Blöcke. Die Kollision ist eine vereinfachte zentrale Minecraft-Hitbox; die langen Überhänge und ausgefahrene Leiter besitzen keine eigene Kollision. Die DLK kann ihre Leiter neigen und ausfahren, aber nicht separat um die Hochachse drehen. Das Boot hat vereinfachten Auftrieb ohne Wellenmodell. Fahrzeuge sind für kreative Ortsgestaltung und Rollenspiel vorgesehen; es gibt keine Herstellungsrezepte.
 
@@ -65,11 +68,11 @@ Die Modelle sind detaillierte Minecraft-Geometrie, keine fotorealistischen CAD-M
 - `VehicleEntity.java`: Serverphysik, Sitzplatz, Interaktion, gespeicherter Zustand.
 - `VehicleItem.java`: Platzierung.
 - `ControlPayload.java` / `Quellcode.java`: Netzwerkpaket und Registrierungen.
-- `src/client/java/de/nebelthal/quellcode/client/VehicleRenderer.java`: Modellteile in Block-/Meter-Einheiten, Materialien und Leiteranimation.
+- `src/client/java/de/nebelthal/quellcode/client/VehicleRendererV2.java`: Fahrzeugformen, Beschriftungsflächen, Materialien und Leiteranimation.
 - `QuellcodeClient.java`: Tasten und Client-Registrierung.
-- `src/main/resources/assets/quellcode/textures/entity`: editierbare PNG-Texturen.
+- `src/main/resources/assets/quellcode/textures/entity` und `textures/markings`: Materialtexturen und separate Beschriftungen.
 - `tools/generate_assets.py`: optionaler Generator der Originaltexturen und des Horns. Nur zum Neugenerieren werden Python mit Pillow, ffmpeg und der im Skript konfigurierte TrueType-Font benötigt.
 
-Die Texturen sind 4×4-Atlanten aus 256×256-Feldern: Lack, Weiß, Reifen, Aluminium, Glas, Rollladen, Gelb, Blaulicht, Scheinwerfer, Rücklicht, Kühlergrill, Seitenbeschriftung, Heckbeschriftung, Riffelblech, Dunkelgrau und Kennzeichen. Alle Quellen und selbst erzeugten Assets stehen unter MIT-Lizenz.
+Die Fahrzeugtexturen sind 4×4-Atlanten aus 256×256-Feldern; die Beschriftung liegt in separaten 512- bzw. 1024 Pixel breiten Bildern. Code und selbst erstellte Grafiken stehen unter MIT-Lizenz. Der Hornmitschnitt wurde vom Nutzer als Vorlage bereitgestellt; seine Nutzungsrechte werden dadurch nicht geändert.
 
 Siehe `VALIDATION.md` für tatsächlich ausgeführte Prüfungen und offene Spieltests.

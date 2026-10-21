@@ -19,6 +19,7 @@ public final class Quellcode implements ModInitializer {
     public static final String ID = "quellcode";
     public static final EnumMap<VehicleKind, EntityType<VehicleEntity>> VEHICLES = new EnumMap<>(VehicleKind.class);
     public static final EnumMap<VehicleKind, Item> ITEMS = new EnumMap<>(VehicleKind.class);
+    public static Item RECOVERY_TOOL;
     public static final SoundEvent SIREN = SoundEvent.of(id("martinshorn"));
     public static Identifier id(String path) { return Identifier.of(ID, path); }
 
@@ -31,10 +32,14 @@ public final class Quellcode implements ModInitializer {
             VEHICLES.put(kind, Registry.register(Registries.ENTITY_TYPE, id(kind.id), type));
             ITEMS.put(kind, Registry.register(Registries.ITEM, id(kind.id), new VehicleItem(kind, new Item.Settings().maxCount(1))));
         }
+        RECOVERY_TOOL = Registry.register(Registries.ITEM, id("recovery_tool"), new Item(new Item.Settings().maxCount(1)));
         Registry.register(Registries.ITEM_GROUP, id("vehicles"), FabricItemGroup.builder()
             .displayName(Text.translatable("itemGroup.quellcode"))
             .icon(() -> new ItemStack(ITEMS.get(VehicleKind.LF_10)))
-            .entries((context, entries) -> { for (VehicleKind kind : VehicleKind.values()) entries.add(ITEMS.get(kind)); }).build());
+            .entries((context, entries) -> {
+                for (VehicleKind kind : VehicleKind.values()) entries.add(ITEMS.get(kind));
+                entries.add(RECOVERY_TOOL);
+            }).build());
         PayloadTypeRegistry.playC2S().register(ControlPayload.ID, ControlPayload.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(ControlPayload.ID, (payload, context) -> context.server().execute(() -> {
             if (context.player().getVehicle() instanceof VehicleEntity vehicle && vehicle.getFirstPassenger() == context.player()) {

@@ -16,7 +16,7 @@ public final class QuellcodeClient implements ClientModInitializer {
             InputUtil.Type.KEYSYM, code, "category.quellcode"));
     }
     @Override public void onInitializeClient() {
-        Quellcode.VEHICLES.values().forEach(type -> EntityRendererRegistry.register(type, VehicleRenderer::new));
+        Quellcode.VEHICLES.values().forEach(type -> EntityRendererRegistry.register(type, VehicleRendererV2::new));
         KeyBinding lights = key("lights", GLFW.GLFW_KEY_B);
         KeyBinding siren = key("siren", GLFW.GLFW_KEY_N);
         KeyBinding ladder = key("ladder", GLFW.GLFW_KEY_L);

@@ -1,46 +1,25 @@
 # Validation — 2026-10-21
 
-## Build
+## Build and server
 
-Successful clean production build with **Gradle 8.14.6**, **JDK 21**, Minecraft 1.21.1, Yarn 1.21.1+build.3, Fabric Loader 0.16.14, Fabric API 0.116.6+1.21.1 and Fabric Loom 1.10.5.
-
-The Linux equivalent of the requested Windows command was executed:
+The updated project compiled with JDK 21 and the requested Gradle 8.14.6:
 
 ```text
-gradle clean build --no-daemon --stacktrace
-BUILD SUCCESSFUL in 26s
+gradle clean build --no-daemon --stacktrace --offline
+BUILD SUCCESSFUL in 14s
 9 actionable tasks: 9 executed
 ```
 
-Environment-specific proxy and system certificate-store JVM flags were necessary in the build environment. They are not embedded in the project or needed for an ordinary Windows connection. Windows CMD itself was not available for testing.
+The build compiled both common/server and client code, processed resources and remapped `quellcode-1.1.0.jar`. Gradle's existing deprecation warning remains. The source has no automated Java unit tests (`test NO-SOURCE`).
 
-Both `compileJava` and `compileClientJava`, resource processing, and production JAR remapping completed. Gradle reports deprecated features in the Fabric build toolchain; use the specified Gradle 8.14.6, not Gradle 9. There are no automated Java unit tests (`test NO-SOURCE`).
+A Fabric 1.21.1 dedicated server started successfully with version 1.1.0. Its recipe count increased from 1290 to 1291 after adding the recovery tool recipe. `/summon quellcode:rw_2` returned `Summoned new RW 2 — FL NT 10/52-01`. Previously saved LF 10 and MZB entities were still present in the same world. The old boat remained at Y ≈ 2.537 on the test water surface. `save-all` and clean shutdown completed.
 
-## Dedicated-server smoke test
-
-Started Minecraft 1.21.1 / Fabric 0.16.14 with the mod in a local, loopback-only test world. All five entity identifiers successfully spawned:
-
-```text
-Summoned new MZF / ELW — FL NT 10/18-01
-Summoned new DLK 18 — FL NT 10/32-01
-Summoned new LF 10 — FL NT 10/42-01
-Summoned new TSF-W — FL NT 10/48-01
-Summoned new MZB — FL NT 10/79-01
-```
-
-After ticking, `/data get entity` verified:
-
-- DLK instantiated with `LadderDeployed:1b` reached `Ladder:1.0f`.
-- MZB in the test pool remained afloat at Y ≈ 2.537, with water surface Y ≈ 2.889.
-- MZF instantiated with `BlueLights:1b` retained `BlueLights:1b` in entity serialization.
-- `save-all` and clean server shutdown completed.
-
-The smoke test preceded the final cosmetic TSF shortening and fully qualified entity data-fixer identifier change; the final source was then clean-built with Gradle 8.14.6. Server logs included vanilla missing-data-fixer notices for custom entity types and an unavailable Mojang public-key request in the offline local test. Neither prevented world startup, spawning, ticking or saving. No claim is made that a world reload was tested.
+Minecraft printed its usual `No data fixer registered` notices for the six custom entity types. An offline public-key request also failed in this isolated test environment. Neither prevented world loading or spawning.
 
 ## Resources
 
-Parsed all nine JSON resources, decoded every PNG, and resolved every item-model texture reference. All five vehicle texture atlases are included, along with the original OGG siren, English/German translations and inventory icons. No external runtime model library is required.
+All six vehicle atlases, high-resolution label textures, inventory icons and the converted OGG are included in the build. The OGG is 7.262 seconds, stereo Vorbis at 44.1 kHz. It derives from the user-supplied MP3 with a high-pass/low-pass filter and soft fades at the start and end. The recovered MP3 printed one decoder warning about a malformed frame; ffmpeg still produced a valid OGG.
 
-## Still needs a graphical client playtest
+## Outstanding client playtest
 
-Actual rendered appearance, camera position, keyboard driving, player mounting/dismounting, audible horn quality, perceived light timing, and multiple connected players were not exercised in a graphical Minecraft client. This environment had no graphical client session. Successful compilation and server tests are not a substitute for visual/gameplay acceptance. See README.md for explicit simulation/model limitations.
+A graphical Minecraft client was unavailable for this build. The following have not been verified in-game after the update: direct water-surface item placement, driving with W/A/S/D, use of the recovery tool, daylight brightness of the beacons, label readability at normal game distance, exact appearance relative to the supplied example images, horn quality, and multi-player synchronization. Code compilation and a server smoke test do not establish those behaviors. If any of them fails, capture a screenshot and `logs/latest.log` from that play session.
