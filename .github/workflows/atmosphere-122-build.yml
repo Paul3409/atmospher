@@ -1,0 +1,33 @@
+name: Build Atmosphere 1.2.2
+
+on:
+  push:
+    paths:
+      - Atmosphere_1.2.2_Dynamisches_Wetter_Superzellen_Source.zip
+      - .github/workflows/atmosphere-122-build.yml
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
+      - run: unzip -q Atmosphere_1.2.2_Dynamisches_Wetter_Superzellen_Source.zip
+      - name: Test model, saved climate, geometry and siren regressions
+        working-directory: atmosphere-java-1.2.2
+        run: bash tools/test-model.sh
+      - name: Build Fabric mod
+        working-directory: atmosphere-java-1.2.2
+        run: gradle clean build --no-daemon --console=plain --stacktrace
+      - uses: actions/upload-artifact@v4
+        with:
+          name: atmosphere-1.2.2-jar
+          path: atmosphere-java-1.2.2/build/libs/*.jar
+          if-no-files-found: error
