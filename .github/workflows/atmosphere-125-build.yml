@@ -69,8 +69,9 @@ jobs:
         working-directory: atmosphere-java-1.2.5
         env:
           LIBGL_ALWAYS_SOFTWARE: 'true'
+          ALSOFT_DRIVERS: 'null'
         run: |
-          xvfb-run -a -s '-screen 0 1280x720x24' timeout 480s gradle runClient -PvisualTest --args='--quickPlaySingleplayer CloudPreview --width 1280 --height 720' --no-daemon --console=plain --stacktrace > visual-client.log 2>&1
+          xvfb-run -a -s '-screen 0 1280x720x24' timeout 240s gradle runClient -PvisualTest --args='--quickPlaySingleplayer CloudPreview --width 1280 --height 720' --no-daemon --console=plain --stacktrace > visual-client.log 2>&1
           test -s run/screenshots/01-outside-focus.png
           test -s run/screenshots/02-below-focus.png
           test -s run/screenshots/03-outside-scene.png
