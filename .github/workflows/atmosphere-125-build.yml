@@ -79,7 +79,8 @@ jobs:
         if: always()
         working-directory: atmosphere-java-1.2.5
         run: |
-          tail -n 140 visual-client.log || true
+          head -n 100 visual-client.log || true
+          tail -n 160 visual-client.log || true
           tail -n 100 run/logs/latest.log || true
       - name: Publish screenshot previews in diagnostic log
         if: always()
