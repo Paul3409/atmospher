@@ -86,3 +86,4 @@ jobs:
             atmosphere-neoforge-0.1.1/run/screenshots/*.png
             atmosphere-neoforge-0.1.1/run/logs/latest.log
             atmosphere-neoforge-0.1.1/run/crash-reports/*.txt
+# Recheck Atmosphere 0.3.0 client behavior
