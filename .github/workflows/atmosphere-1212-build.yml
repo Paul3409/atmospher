@@ -89,6 +89,7 @@ jobs:
           python - <<'PY'
           import base64,pathlib
           for p in sorted(pathlib.Path('run/screenshots').glob('*.png')):
+              if p.name not in ('11-squall-approach.png','12-under-squall.png'): continue
               data=base64.b64encode(p.read_bytes()).decode()
               for index,start in enumerate(range(0,len(data),4096)):
                   print(f'ATMOSPHERE_IMAGE:{p.name}:{index}:{data[start:start+4096]}')
