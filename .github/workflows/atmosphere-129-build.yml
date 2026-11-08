@@ -1,0 +1,104 @@
+name: Build and visual-test Atmosphere 1.2.9
+
+on:
+  push:
+    paths:
+      - Atmosphere_1.2.9_Wollige_Wolken_Tornados_Source.zip
+      - .github/workflows/atmosphere-129-build.yml
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
+      - run: unzip -q Atmosphere_1.2.9_Wollige_Wolken_Tornados_Source.zip
+      - name: Test model and regressions
+        working-directory: atmosphere-java-1.2.9
+        run: bash tools/test-model.sh
+      - name: Check GLSL 150 shader stages and resources
+        working-directory: atmosphere-java-1.2.9
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y glslang-tools
+          python -m venv build/asset-venv
+          build/asset-venv/bin/pip -q install pillow
+          build/asset-venv/bin/python tools/check_render_assets.py
+          mkdir -p build/shader-test
+          cp src/main/resources/assets/atmosphere/shaders/core/cloud_hull.vsh build/shader-test/cloud.vert
+          cp src/main/resources/assets/atmosphere/shaders/core/cloud_hull.fsh build/shader-test/cloud.frag
+          glslangValidator -l build/shader-test/cloud.vert build/shader-test/cloud.frag
+      - name: Build Fabric 1.21.1 mod
+        working-directory: atmosphere-java-1.2.9
+        run: gradle clean build --no-daemon --console=plain --stacktrace
+      - uses: actions/upload-artifact@v4
+        with:
+          name: atmosphere-1.2.9-jar
+          path: atmosphere-java-1.2.9/build/libs/*.jar
+          if-no-files-found: error
+  visual:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
+      - run: unzip -q Atmosphere_1.2.9_Wollige_Wolken_Tornados_Source.zip
+      - name: Prepare isolated Minecraft 1.21.1 test world
+        working-directory: atmosphere-java-1.2.9
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 libasound2t64
+          python -m venv build/visual-venv
+          build/visual-venv/bin/pip -q install nbtlib
+          build/visual-venv/bin/python tools/create_visual_world.py
+      - name: Capture real client views with software OpenGL
+        working-directory: atmosphere-java-1.2.9
+        env:
+          LIBGL_ALWAYS_SOFTWARE: 'true'
+          ALSOFT_DRIVERS: 'null'
+        run: |
+          xvfb-run -a -s '-screen 0 1280x720x24' timeout 360s gradle runClient -PvisualTest --args='--quickPlaySingleplayer CloudPreview --width 1280 --height 720' --no-daemon --console=plain --stacktrace > visual-client.log 2>&1
+          test -s run/screenshots/01-outside-focus.png
+          test -s run/screenshots/02-below-focus.png
+          test -s run/screenshots/03-outside-scene.png
+      - name: Show client diagnostics
+        if: always()
+        working-directory: atmosphere-java-1.2.9
+        run: |
+          head -n 100 visual-client.log || true
+          tail -n 160 visual-client.log || true
+          tail -n 100 run/logs/latest.log || true
+      - name: Publish screenshot previews in diagnostic log
+        if: always()
+        working-directory: atmosphere-java-1.2.9
+        run: |
+          python - <<'PY'
+          import base64,pathlib
+          for p in sorted(pathlib.Path('run/screenshots').glob('*.png')):
+              data=base64.b64encode(p.read_bytes()).decode()
+              for index,start in enumerate(range(0,len(data),4096)):
+                  print(f'ATMOSPHERE_IMAGE:{p.name}:{index}:{data[start:start+4096]}')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: atmosphere-1.2.9-real-client-views
+          path: |
+            atmosphere-java-1.2.9/run/screenshots/*.png
+            atmosphere-java-1.2.9/visual-client.log
+            atmosphere-java-1.2.9/run/logs/latest.log
+            atmosphere-java-1.2.9/run/crash-reports/*.txt
