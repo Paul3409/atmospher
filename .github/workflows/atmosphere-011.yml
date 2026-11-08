@@ -1,0 +1,85 @@
+name: Atmosphere NeoForge 21.1.259
+on:
+  push:
+    paths:
+      - Atmosphere_NeoForge_0.1.1_Source.zip
+      - .github/workflows/atmosphere-011.yml
+  workflow_dispatch:
+jobs:
+  build-and-client:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
+      - run: unzip -q Atmosphere_NeoForge_0.1.1_Source.zip
+      - name: Build exact NeoForge version
+        working-directory: atmosphere-neoforge-0.1.1
+        run: gradle clean build --no-daemon --console=plain --stacktrace
+      - name: Verify packaged versions and mixin
+        working-directory: atmosphere-neoforge-0.1.1
+        run: |
+          python - <<'PY'
+          import zipfile,pathlib,tomllib,json
+          p=next(pathlib.Path('build/libs').glob('*.jar'))
+          with zipfile.ZipFile(p) as z:
+              names=z.namelist()
+              assert 'fabric.mod.json' not in names
+              assert not any('NeoSmoke' in n for n in names)
+              assert 'dev/atmosphere/companion/mixin/LevelRendererMixin.class' in names
+              m=tomllib.loads(z.read('META-INF/neoforge.mods.toml').decode())
+              deps={d['modId']:d['versionRange'] for d in m['dependencies']['atmosphere_companion']}
+              assert deps=={'minecraft':'[1.21.1]','neoforge':'[21.1.259]'},deps
+              assert m['mixins'][0]['config']=='atmosphere_companion.mixins.json'
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: atmosphere-011-jar
+          path: atmosphere-neoforge-0.1.1/build/libs/*.jar
+      - name: Prepare isolated test world
+        working-directory: atmosphere-neoforge-0.1.1
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 libasound2t64
+          python -m venv build/test-venv
+          build/test-venv/bin/pip -q install nbtlib
+          build/test-venv/bin/python tools/create_test_world.py
+      - name: Test toggles in Minecraft 1.21.1 client
+        working-directory: atmosphere-neoforge-0.1.1
+        env:
+          LIBGL_ALWAYS_SOFTWARE: 'true'
+          ALSOFT_DRIVERS: 'null'
+        run: |
+          xvfb-run -a -s '-screen 0 1280x720x24' timeout 420s gradle runClient -PsmokeTest --no-daemon --console=plain --stacktrace > neo-client.log 2>&1
+          test -s run/screenshots/01-vanilla-an.png
+          test -s run/screenshots/02-vanilla-aus.png
+          for marker in ATMOSPHERE_NEO_READY ATMOSPHERE_NEO_WORLD_READY ATMOSPHERE_TEST_OPTIONS_DISABLED ATMOSPHERE_TEST_HIDE_CLOUDS ATMOSPHERE_TEST_HIDE_PRECIPITATION ATMOSPHERE_TEST_HIDE_RAIN_EFFECTS ATMOSPHERE_TEST_OPTIONS_RESTORED; do grep -q "$marker" neo-client.log; done
+      - name: Diagnostics and downloadable test files
+        if: always()
+        working-directory: atmosphere-neoforge-0.1.1
+        run: |
+          tail -n 100 neo-client.log || true
+          python - <<'PY'
+          import pathlib,base64
+          for marker,folder in [('ATMOSPHERE_JAR',pathlib.Path('build/libs')),('ATMOSPHERE_IMAGE',pathlib.Path('run/screenshots'))]:
+              for p in folder.glob('*'):
+                  if p.suffix not in ('.jar','.png'): continue
+                  data=base64.b64encode(p.read_bytes()).decode()
+                  for i,start in enumerate(range(0,len(data),4096)):
+                      print(f'{marker}:{p.name}:{i}:{data[start:start+4096]}')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: atmosphere-011-test-evidence
+          path: |
+            atmosphere-neoforge-0.1.1/neo-client.log
+            atmosphere-neoforge-0.1.1/run/screenshots/*.png
+            atmosphere-neoforge-0.1.1/run/logs/latest.log
+            atmosphere-neoforge-0.1.1/run/crash-reports/*.txt
