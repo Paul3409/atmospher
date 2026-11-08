@@ -1,0 +1,41 @@
+name: Independent NeoForge 1.21.1 foundation
+on:
+  push:
+    paths:
+      - Atmosphere_NeoForge_0.1.0_Independent_Source.zip
+      - .github/workflows/atmosphere-neoforge-independent-010.yml
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
+      - run: unzip -q Atmosphere_NeoForge_0.1.0_Independent_Source.zip
+      - name: Build independent NeoForge mod
+        working-directory: atmosphere-neoforge-0.1.0
+        run: gradle clean build --no-daemon --console=plain --stacktrace
+      - name: Verify exact versions and independence
+        working-directory: atmosphere-neoforge-0.1.0
+        run: |
+          python - <<'PY'
+          import zipfile,pathlib,tomllib
+          p=next(pathlib.Path('build/libs').glob('*.jar'))
+          with zipfile.ZipFile(p) as z:
+              assert 'fabric.mod.json' not in z.namelist()
+              assert not any('NeoSmoke' in n for n in z.namelist())
+              m=tomllib.loads(z.read('META-INF/neoforge.mods.toml').decode())
+              deps={d['modId']:d['versionRange'] for d in m['dependencies']['atmosphere_companion']}
+              assert deps == {'minecraft':'[1.21.1]', 'neoforge':'[21.1.219]'}, deps
+          print('PASS: independent production JAR; Minecraft 1.21.1 and NeoForge 21.1.219')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: atmosphere-neoforge-independent-0.1.0
+          path: atmosphere-neoforge-0.1.0/build/libs/*.jar
