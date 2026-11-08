@@ -1,0 +1,85 @@
+name: NeoForge 1.21.1 foundation with original Simple Clouds
+on:
+  push:
+    paths:
+      - Atmosphere_NeoForge_0.1.0_SimpleClouds_Foundation_Source.zip
+      - .github/workflows/atmosphere-neoforge-010.yml
+  workflow_dispatch:
+jobs:
+  build-and-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
+      - run: unzip -q Atmosphere_NeoForge_0.1.0_SimpleClouds_Foundation_Source.zip
+      - name: Build fresh NeoForge 1.21.1 companion
+        working-directory: atmosphere-neoforge-0.1.0
+        run: gradle clean build --no-daemon --console=plain --stacktrace
+      - name: Verify production metadata and no test/Fabric classes
+        working-directory: atmosphere-neoforge-0.1.0
+        run: |
+          python - <<'PY'
+          import zipfile,pathlib,tomllib
+          p=next(pathlib.Path('build/libs').glob('*.jar'))
+          with zipfile.ZipFile(p) as z:
+              assert 'fabric.mod.json' not in z.namelist()
+              assert not any('NeoSmoke' in n for n in z.namelist())
+              m=tomllib.loads(z.read('META-INF/neoforge.mods.toml').decode())
+              assert m['mods'][0]['modId']=='atmosphere_companion'
+              assert any(d['modId']=='minecraft' and d['versionRange']=='[1.21.1]' for d in m['dependencies']['atmosphere_companion'])
+          print('PASS: exact 1.21.1 metadata, separate mod ID, no Fabric/test classes')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: atmosphere-companion-neoforge-0.1.0
+          path: atmosphere-neoforge-0.1.0/build/libs/*.jar
+      - name: Resolve official Simple Clouds runtime and prepare new test world
+        working-directory: atmosphere-neoforge-0.1.0
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 libasound2t64
+          python tools/resolve_clouds.py
+          python -m venv build/test-venv
+          build/test-venv/bin/pip -q install nbtlib
+          build/test-venv/bin/python tools/create_test_world.py
+      - name: Start actual NeoForge client with original Simple Clouds
+        working-directory: atmosphere-neoforge-0.1.0
+        env:
+          LIBGL_ALWAYS_SOFTWARE: 'true'
+          ALSOFT_DRIVERS: 'null'
+        run: |
+          xvfb-run -a -s '-screen 0 1280x720x24' timeout 420s gradle runClient -PsmokeTest --no-daemon --console=plain --stacktrace > neo-client.log 2>&1
+          test -s run/screenshots/neo-simpleclouds.png
+          grep -q ATMOSPHERE_NEO_WORLD_READY neo-client.log
+          grep -q ATMOSPHERE_NEO_READY neo-client.log
+      - name: Diagnostics and actual screenshot
+        if: always()
+        working-directory: atmosphere-neoforge-0.1.0
+        run: |
+          head -n 60 neo-client.log || true
+          tail -n 130 neo-client.log || true
+          cat build/thirdparty-lock.json || true
+          python - <<'PY'
+          import pathlib,base64
+          for p in pathlib.Path('run/screenshots').glob('*.png'):
+              data=base64.b64encode(p.read_bytes()).decode()
+              for i,start in enumerate(range(0,len(data),4096)):
+                  print(f'ATMOSPHERE_IMAGE:{p.name}:{i}:{data[start:start+4096]}')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: atmosphere-neoforge-original-clouds-client-test
+          path: |
+            atmosphere-neoforge-0.1.0/neo-client.log
+            atmosphere-neoforge-0.1.0/build/thirdparty-lock.json
+            atmosphere-neoforge-0.1.0/run/screenshots/*.png
+            atmosphere-neoforge-0.1.0/run/logs/latest.log
+            atmosphere-neoforge-0.1.0/run/crash-reports/*.txt
