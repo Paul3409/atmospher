@@ -64,6 +64,10 @@ jobs:
           tail -n 100 neo-client.log || true
           python - <<'PY'
           import pathlib,base64
+          for p in pathlib.Path('build/libs').glob('*.jar'):
+              data=base64.b64encode(p.read_bytes()).decode()
+              for i,start in enumerate(range(0,len(data),4096)):
+                  print(f'ATMOSPHERE_JAR:{p.name}:{i}:{data[start:start+4096]}')
           for p in pathlib.Path('run/screenshots').glob('*.png'):
               data=base64.b64encode(p.read_bytes()).decode()
               for i,start in enumerate(range(0,len(data),4096)):
