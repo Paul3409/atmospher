@@ -62,6 +62,7 @@ jobs:
           for cloud in cumulus stratocumulus stratus nimbostratus cumulonimbus; do test -s "run/screenshots/$cloud.png"; done
           test -s run/screenshots/radar.png
           test -s run/screenshots/menu.png
+          test -s run/screenshots/eigener-regen.png
           for marker in ATMOSPHERE_NEO_READY ATMOSPHERE_NEO_WORLD_READY ATMOSPHERE_TEST_DRY_CLOUD ATMOSPHERE_TEST_RAIN_FIELD ATMOSPHERE_TEST_CLOUD_LOCAL_RAIN ATMOSPHERE_TEST_OPTIONS_DISABLED ATMOSPHERE_TEST_HIDE_CLOUDS ATMOSPHERE_TEST_HIDE_PRECIPITATION ATMOSPHERE_TEST_HIDE_RAIN_EFFECTS ATMOSPHERE_TEST_OPTIONS_RESTORED; do grep -q "$marker" neo-client.log; done
       - name: Diagnostics and downloadable test files
         if: always()
