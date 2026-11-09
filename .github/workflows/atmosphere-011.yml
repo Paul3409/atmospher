@@ -78,6 +78,7 @@ jobs:
         if: always()
         working-directory: atmosphere-neoforge-0.1.1
         run: |
+          grep -E 'ATMOSPHERE_|IllegalStateException|ERROR|Exception' neo-client.log | tail -n 240 || true
           tail -n 100 neo-client.log || true
           python - <<'PY'
           import pathlib,base64
