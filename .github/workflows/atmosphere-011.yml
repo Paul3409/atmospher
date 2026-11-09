@@ -76,7 +76,7 @@ jobs:
           for marker,folder in [('ATMOSPHERE_JAR',pathlib.Path('build/libs')),('ATMOSPHERE_IMAGE',pathlib.Path('run/screenshots'))]:
               for p in folder.glob('*'):
                   if p.suffix not in ('.jar','.png'): continue
-                  if marker == 'ATMOSPHERE_IMAGE' and p.name not in {'stratus.png','nimbostratus.png','cumulonimbus.png','vorhang-ferne.png','vorhang-nah.png'}: continue
+                  if marker == 'ATMOSPHERE_IMAGE' and p.name not in {'vorhang-ferne.png','vorhang-nah.png','stratus.png','cumulonimbus.png'}: continue
                   data=base64.b64encode(p.read_bytes()).decode()
                   for i,start in enumerate(range(0,len(data),4096)):
                       print(f'{marker}:{p.name}:{i}:{data[start:start+4096]}')
