@@ -36,7 +36,7 @@ jobs:
       - name: Verify packaged versions and mixin
         working-directory: atmosphere-neoforge-0.1.1
         run: |
-          python - <<'PY'
+          python - <<'PY' 2>&1 | tee verify.log
           import zipfile,pathlib,tomllib,json
           p=next(pathlib.Path('build/libs').glob('*.jar'))
           with zipfile.ZipFile(p) as z:
@@ -51,6 +51,15 @@ jobs:
               assert deps=={'minecraft':'[1.21.1]','neoforge':'[21.1.259]'},deps
               assert m['mixins'][0]['config']=='atmosphere_companion.mixins.json'
           PY
+      - name: Preserve package diagnostics
+        if: failure()
+        run: |
+          cp atmosphere-neoforge-0.1.1/verify.log ci-verify-error.log
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add ci-verify-error.log
+          git commit -m 'Record Atmosphere package diagnostics [skip ci]'
+          git push
       - uses: actions/upload-artifact@v4
         with:
           name: atmosphere-011-jar
