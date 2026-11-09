@@ -23,7 +23,16 @@ jobs:
       - run: unzip -q Atmosphere_NeoForge_0.1.1_Source.zip
       - name: Build exact NeoForge version
         working-directory: atmosphere-neoforge-0.1.1
-        run: gradle clean build --no-daemon --console=plain --stacktrace
+        run: gradle clean build --no-daemon --console=plain --stacktrace 2>&1 | tee build.log
+      - name: Preserve compiler diagnostics
+        if: failure()
+        run: |
+          cp atmosphere-neoforge-0.1.1/build.log ci-build-error.log
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add ci-build-error.log
+          git commit -m 'Record Atmosphere compiler diagnostics [skip ci]'
+          git push
       - name: Verify packaged versions and mixin
         working-directory: atmosphere-neoforge-0.1.1
         run: |
