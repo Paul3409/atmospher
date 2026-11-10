@@ -1,0 +1,65 @@
+name: Weather Simulator 2.1.0
+on:
+  push:
+    paths:
+      - Weather_Simulator_NeoForge_2.1.0_Source.zip
+      - .github/workflows/weather-simulator-210.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '21'}
+      - uses: gradle/actions/setup-gradle@v4
+        with: {gradle-version: '8.14.3'}
+      - run: unzip -q Weather_Simulator_NeoForge_2.1.0_Source.zip
+      - name: Build exact NeoForge version
+        working-directory: weather-simulator-neoforge-2.1.0
+        run: gradle clean build --no-daemon --console=plain --stacktrace 2>&1 | tee build.log
+      - name: Verify clean simulator package
+        working-directory: weather-simulator-neoforge-2.1.0
+        run: |
+          python - <<'PY'
+          import pathlib,zipfile,tomllib
+          jar=next(pathlib.Path('build/libs').glob('*.jar'))
+          with zipfile.ZipFile(jar) as z:
+              names=set(z.namelist())
+              required={'dev/paulus/weathersimulator/WeatherModel.class','dev/paulus/weathersimulator/PrecipitationRenderer.class','dev/paulus/weathersimulator/SnowCover.class','dev/paulus/weathersimulator/ZoneMapScreen.class','dev/paulus/weathersimulator/DistanceFog.class'}
+              assert required<=names,required-names
+              forbidden=('CloudRenderer','RadarScreen','WeatherCells','StormEvolution','SynopticSystems','atmosphere/companion')
+              assert not any(any(bad in name for bad in forbidden) for name in names)
+              meta=tomllib.loads(z.read('META-INF/neoforge.mods.toml').decode())
+              assert meta['mods'][0]['modId']=='weather_simulator'
+              deps={d['modId']:d['versionRange'] for d in meta['dependencies']['weather_simulator']}
+              assert deps=={'minecraft':'[1.21.1]','neoforge':'[21.1.259]'},deps
+          print('PASS: clean manual weather simulator, exact versions, no old weather classes')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: weather-simulator-neoforge-2.1.0
+          path: weather-simulator-neoforge-2.1.0/build/libs/weather-simulator-neoforge-2.1.0.jar
+      - name: Publish package
+        run: |
+          zip -j Weather_Simulator_2.1.0_NeoForge_21.1.259.zip \
+            weather-simulator-neoforge-2.1.0/build/libs/weather-simulator-neoforge-2.1.0.jar \
+            weather-simulator-neoforge-2.1.0/weather-simulator-model-preview.png \
+            weather-simulator-neoforge-2.1.0/README.md
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add Weather_Simulator_2.1.0_NeoForge_21.1.259.zip
+          git commit -m 'Package clean Weather Simulator 2.1.0 [skip ci]'
+          git push
+      - name: Preserve compiler diagnostics
+        if: failure()
+        run: |
+          cp weather-simulator-neoforge-2.1.0/build.log weather-simulator-build-error.log || true
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add weather-simulator-build-error.log
+          git commit -m 'Record Weather Simulator 2.1.0 diagnostics [skip ci]' || true
+          git push || true
