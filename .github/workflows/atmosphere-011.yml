@@ -101,7 +101,10 @@ jobs:
           test -s run/screenshots/menu-sounds.png
           test -s run/screenshots/gemischtes-wolkenfeld.png
           test -s run/screenshots/radar-superzelle.png
-          for marker in ATMOSPHERE_NEO_READY ATMOSPHERE_NEO_WORLD_READY ATMOSPHERE_TEST_WORLD_ANCHORED_WIND ATMOSPHERE_TEST_WORLD_ANCHORED_PARTICLES ATMOSPHERE_TEST_WIND_TURN_CONTINUITY ATMOSPHERE_TEST_DRY_CLOUD ATMOSPHERE_TEST_CLOUD_TILE_CONTINUITY ATMOSPHERE_TEST_CONTINUOUS_LAYER ATMOSPHERE_TEST_RAIN_FIELD ATMOSPHERE_TEST_CLOUD_LOCAL_RAIN ATMOSPHERE_TEST_OPTIONS_DISABLED ATMOSPHERE_TEST_HIDE_CLOUDS ATMOSPHERE_TEST_HIDE_PRECIPITATION ATMOSPHERE_TEST_HIDE_RAIN_EFFECTS ATMOSPHERE_TEST_OPTIONS_RESTORED ATMOSPHERE_TEST_TEMPERATURE_BOUNDARIES ATMOSPHERE_TEST_RADAR_DENSITY ATMOSPHERE_TEST_GIANT_STORM ATMOSPHERE_TEST_SNOW ATMOSPHERE_TEST_NATURAL_CELLS ATMOSPHERE_TEST_NON_CIRCULAR_RAIN ATMOSPHERE_TEST_TERRAIN_FOG ATMOSPHERE_TEST_TEXTURED_PRECIPITATION ATMOSPHERE_TEST_WEATHER_SOUNDS ATMOSPHERE_TEST_DRY_INTERCELL_CLOUDS; do grep -q "$marker" neo-client.log; done
+          test -s run/screenshots/menu-radar.png
+          test -s run/screenshots/menu-wettermodell.png
+          test -s run/screenshots/menu-leistung.png
+          for marker in ATMOSPHERE_NEO_READY ATMOSPHERE_NEO_WORLD_READY ATMOSPHERE_TEST_WORLD_ANCHORED_WIND ATMOSPHERE_TEST_WORLD_ANCHORED_PARTICLES ATMOSPHERE_TEST_WIND_TURN_CONTINUITY ATMOSPHERE_TEST_DRY_CLOUD ATMOSPHERE_TEST_CLOUD_TILE_CONTINUITY ATMOSPHERE_TEST_CONTINUOUS_LAYER ATMOSPHERE_TEST_RAIN_FIELD ATMOSPHERE_TEST_CLOUD_LOCAL_RAIN ATMOSPHERE_TEST_OPTIONS_DISABLED ATMOSPHERE_TEST_HIDE_CLOUDS ATMOSPHERE_TEST_HIDE_PRECIPITATION ATMOSPHERE_TEST_HIDE_RAIN_EFFECTS ATMOSPHERE_TEST_OPTIONS_RESTORED ATMOSPHERE_TEST_TEMPERATURE_BOUNDARIES ATMOSPHERE_TEST_RADAR_DENSITY ATMOSPHERE_TEST_GIANT_STORM ATMOSPHERE_TEST_SNOW ATMOSPHERE_TEST_NATURAL_CELLS ATMOSPHERE_TEST_NON_CIRCULAR_RAIN ATMOSPHERE_TEST_TERRAIN_FOG ATMOSPHERE_TEST_TEXTURED_PRECIPITATION ATMOSPHERE_TEST_WEATHER_SOUNDS ATMOSPHERE_TEST_DRY_INTERCELL_CLOUDS ATMOSPHERE_TEST_FABRIC_DBZ_PALETTE ATMOSPHERE_TEST_SYNOPTIC_SYSTEMS ATMOSPHERE_TEST_ADAPTIVE_CLOUD_LOD; do grep -q "$marker" neo-client.log; done
       - name: Preserve client diagnostics
         if: failure()
         run: |
@@ -111,10 +114,10 @@ jobs:
           git add ci-client-error.log
           git commit -m 'Record Atmosphere client diagnostics [skip ci]'
           git push
-      - name: Publish verified Atmosphere 1.0.0 package
+      - name: Publish verified Atmosphere 1.1.0 package
         run: |
-          zip -j Atmosphere_1.0.0_NeoForge_21.1.259_mit_Bildern.zip \
-            atmosphere-neoforge-0.1.1/build/libs/atmosphere-companion-neoforge-1.0.0.jar \
+          zip -j Atmosphere_1.1.0_NeoForge_21.1.259_mit_Bildern.zip \
+            atmosphere-neoforge-0.1.1/build/libs/atmosphere-companion-neoforge-1.1.0.jar \
             atmosphere-neoforge-0.1.1/weather-cells-math-preview-0.7.0.png \
             atmosphere-neoforge-0.1.1/layer-front-math-preview-0.7.0.png \
             atmosphere-neoforge-0.1.1/terrain-fog-math-preview-0.8.0.png \
@@ -134,11 +137,14 @@ jobs:
             atmosphere-neoforge-0.1.1/run/screenshots/menu-sounds.png \
             atmosphere-neoforge-0.1.1/run/screenshots/gemischtes-wolkenfeld.png \
             atmosphere-neoforge-0.1.1/run/screenshots/radar-superzelle.png \
+            atmosphere-neoforge-0.1.1/run/screenshots/menu-radar.png \
+            atmosphere-neoforge-0.1.1/run/screenshots/menu-wettermodell.png \
+            atmosphere-neoforge-0.1.1/run/screenshots/menu-leistung.png \
             atmosphere-neoforge-0.1.1/README.md
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add Atmosphere_1.0.0_NeoForge_21.1.259_mit_Bildern.zip
-          git commit -m 'Package Atmosphere 1.0.0 verified build [skip ci]'
+          git add Atmosphere_1.1.0_NeoForge_21.1.259_mit_Bildern.zip
+          git commit -m 'Package Atmosphere 1.1.0 verified build [skip ci]'
           git push
       - name: Diagnostics and downloadable test files
         if: always()
